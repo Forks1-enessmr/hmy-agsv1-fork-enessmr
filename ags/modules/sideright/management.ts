@@ -43,14 +43,14 @@ function WifiIndicator(): Widget {
                 transition: 'slide_up_down',
                 transitionDuration: userOptions.animations.durationSmall,
                 children: {
-                    'disabled': Widget.Label({ class_name: 'txt-norm icon-material', label: 'signal_wifi_off' }),
-                    'disconnected': Widget.Label({ class_name: 'txt-norm icon-material', label: 'signal_wifi_statusbar_not_connected' }),
-                    'connecting': Widget.Label({ class_name: 'txt-norm icon-material', label: 'settings_ethernet' }),
-                    '0': Widget.Label({ class_name: 'txt-norm icon-material', label: 'signal_wifi_0_bar' }),
-                    '1': Widget.Label({ class_name: 'txt-norm icon-material', label: 'network_wifi_1_bar' }),
-                    '2': Widget.Label({ class_name: 'txt-norm icon-material', label: 'network_wifi_2_bar' }),
-                    '3': Widget.Label({ class_name: 'txt-norm icon-material', label: 'network_wifi_3_bar' }),
-                    '4': Widget.Label({ class_name: 'txt-norm icon-material', label: 'signal_wifi_4_bar' }),
+                    'disabled': Widget.Label({ class_name: 'txt-norm material-icon', label: 'signal_wifi_off' }),
+                    'disconnected': Widget.Label({ class_name: 'txt-norm material-icon', label: 'signal_wifi_statusbar_not_connected' }),
+                    'connecting': Widget.Label({ class_name: 'txt-norm material-icon', label: 'settings_ethernet' }),
+                    '0': Widget.Label({ class_name: 'txt-norm material-icon', label: 'signal_wifi_0_bar' }),
+                    '1': Widget.Label({ class_name: 'txt-norm material-icon', label: 'network_wifi_1_bar' }),
+                    '2': Widget.Label({ class_name: 'txt-norm material-icon', label: 'network_wifi_2_bar' }),
+                    '3': Widget.Label({ class_name: 'txt-norm material-icon', label: 'network_wifi_3_bar' }),
+                    '4': Widget.Label({ class_name: 'txt-norm material-icon', label: 'signal_wifi_4_bar' }),
                 },
                 setup: (self: any) => self.hook(Network, (stack: any) => {
                     const wifi = Network.wifi;
