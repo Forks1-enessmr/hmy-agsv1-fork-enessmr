@@ -12,7 +12,7 @@ import Gtk from "gi://Gtk?version=3.0";
 
 const current_page = Variable(0);
 
-function WifiIndicator() {
+function WifiIndicator(): Widget {
     const ssid = Widget.Label({
         label: "Unknown",
         visible: false,
@@ -21,6 +21,7 @@ function WifiIndicator() {
         vpack: "center",
         truncate: "end"
     });
+
     const name = Widget.Box({
         vertical: true,
         vpack: "center",
@@ -34,10 +35,37 @@ function WifiIndicator() {
             ssid
         ]
     });
+
     return Widget.Box({
         css: "padding-left: 15px; padding-right: 15px; padding-top: 5px; padding-bottom: 5px;",
         children: [
-            MaterialIcon("signal_wifi_4_bar", "20px"),
+            Widget.Stack({
+                transition: 'slide_up_down',
+                transitionDuration: userOptions.animations.durationSmall,
+                children: {
+                    'disabled': Widget.Label({ class_name: 'txt-norm icon-material', label: 'signal_wifi_off' }),
+                    'disconnected': Widget.Label({ class_name: 'txt-norm icon-material', label: 'signal_wifi_statusbar_not_connected' }),
+                    'connecting': Widget.Label({ class_name: 'txt-norm icon-material', label: 'settings_ethernet' }),
+                    '0': Widget.Label({ class_name: 'txt-norm icon-material', label: 'signal_wifi_0_bar' }),
+                    '1': Widget.Label({ class_name: 'txt-norm icon-material', label: 'network_wifi_1_bar' }),
+                    '2': Widget.Label({ class_name: 'txt-norm icon-material', label: 'network_wifi_2_bar' }),
+                    '3': Widget.Label({ class_name: 'txt-norm icon-material', label: 'network_wifi_3_bar' }),
+                    '4': Widget.Label({ class_name: 'txt-norm icon-material', label: 'signal_wifi_4_bar' }),
+                },
+                setup: (self: any) => self.hook(Network, (stack: any) => {
+                    const wifi = Network.wifi;
+                    if (!wifi) return;
+                    
+                    if (!wifi.enabled) {
+                        stack.shown = 'disabled';
+                    } else if (wifi.internet === 'connected') {
+                        const level = Math.min(4, Math.ceil(wifi.strength / 25));
+                        stack.shown = String(level);
+                    } else if (['disconnected', 'connecting'].includes(wifi.internet)) {
+                        stack.shown = wifi.internet;
+                    }
+                }),
+            }),
             name,
             Widget.Box({
                 hpack: "end",
@@ -47,20 +75,22 @@ function WifiIndicator() {
                 })
             })
         ],
-        setup: (self) => {
-            self.hook(network, () => {
-                ssid.label = network.wifi.ssid ?? "Unknown";
-                ssid.visible = !!network.wifi.ssid;
+        setup: (self: any) => {
+            self.hook(Network, () => {
+                const wifi = Network.wifi;
+                ssid.label = wifi?.ssid ?? "Unknown";
+                ssid.visible = !!wifi?.ssid;
             });
         }
     });
 }
 
+
 const WiredIndicator = () =>
     Widget.Box({
         css: "padding-left: 15px; padding-right: 15px; padding-top: 5px; padding-bottom: 5px;",
         children: [
-            MaterialIcon("settings_ethernet", "20px"),
+            MaterialIcon("lan", "20px"),
             Widget.Label({
                 label: "Internet"
             })
