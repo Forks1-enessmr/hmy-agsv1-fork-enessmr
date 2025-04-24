@@ -12,7 +12,7 @@ import Gtk from "gi://Gtk?version=3.0";
 
 const current_page = Variable(0);
 
-function WifiIndicator(): Widget {
+function WifiIndicator() {
     const ssid = Widget.Label({
         label: "Unknown",
         visible: false,
@@ -40,17 +40,15 @@ function WifiIndicator(): Widget {
         css: "padding-left: 15px; padding-right: 15px; padding-top: 5px; padding-bottom: 5px;",
         children: [
             Widget.Stack({
-                transition: 'slide_up_down',
-                transitionDuration: userOptions.animations.durationSmall,
                 children: {
-                    'disabled': Widget.Label({ class_name: 'txt-norm material-icon', label: 'signal_wifi_off' }),
-                    'disconnected': Widget.Label({ class_name: 'txt-norm material-icon', label: 'signal_wifi_statusbar_not_connected' }),
-                    'connecting': Widget.Label({ class_name: 'txt-norm material-icon', label: 'settings_ethernet' }),
-                    '0': Widget.Label({ class_name: 'txt-norm material-icon', label: 'signal_wifi_0_bar' }),
-                    '1': Widget.Label({ class_name: 'txt-norm material-icon', label: 'network_wifi_1_bar' }),
-                    '2': Widget.Label({ class_name: 'txt-norm material-icon', label: 'network_wifi_2_bar' }),
-                    '3': Widget.Label({ class_name: 'txt-norm material-icon', label: 'network_wifi_3_bar' }),
-                    '4': Widget.Label({ class_name: 'txt-norm material-icon', label: 'signal_wifi_4_bar' }),
+                    'disabled': MaterialIcon("signal_wifi_off", "20px"),
+                    'disconnected': MaterialIcon("signal_wifi_statusbar_not_connected", "20px"),
+                    'connecting': MaterialIcon("settings_ethernet", "20px"),
+                    '0': MaterialIcon("signal_wifi_0_bar", "20px"),
+                    '1': MaterialIcon("network_wifi_1_bar", "20px"),
+                    '2': MaterialIcon("network_wifi_2_bar", "20px"),
+                    '3': MaterialIcon("network_wifi_3_bar", "20px"),
+                    '4': MaterialIcon("signal_wifi_4_bar", "20px"),
                 },
                 setup: (self: any) => self.hook(Network, (stack: any) => {
                     const wifi = Network.wifi;
@@ -85,16 +83,56 @@ function WifiIndicator(): Widget {
     });
 }
 
-
 const WiredIndicator = () =>
     Widget.Box({
-        css: "padding-left: 15px; padding-right: 15px; padding-top: 5px; padding-bottom: 5px;",
         children: [
-            MaterialIcon("lan", "20px"),
+            //MaterialIcon("lan", "20px"),
+            Widget.Stack({
+                children: {
+                    'fallback': MaterialIcon("settings_ethernet", "20px"),
+                    'unknown': MaterialIcon("wifi_off", "20px"),
+                    'disconnected': MaterialIcon("signal_wifi_off", "20px"),
+                    'connected': MaterialIcon("lan", "20px"),
+                    'connecting': MaterialIcon("settings_ethernet", "20px"),
+                },
+                setup: (self) => self.hook(Network, stack => {
+                    if (!Network.wired)
+                        return;
+
+                    const { internet } = Network.wired;
+                    if (['connecting', 'connected'].includes(internet))
+                        stack.shown = internet;
+                    else if (Network.connectivity !== 'full')
+                        stack.shown = 'disconnected';
+                    else
+                        stack.shown = 'fallback';
+                }),
+            }),
             Widget.Label({
                 label: "Internet"
             })
-        ]
+        ],
+        setup: (self: any) => {
+            self.hook(Network, () => {
+                const connected = Network.wired?.enabled;
+                self.css = connected ? `
+                    padding-left: 15px;
+                    padding-right: 15px;
+                    padding-top: 5px;
+                    padding-bottom: 5px;
+                    background: @surfaceContainer;
+                    border: none;
+                    outline: none;
+                    transition-property: border-image, background-size, background-image, color, background-color, border-color;
+                    transition-duration: 0.3s, 0.3s, 0.3s, 0.2s, 0.2s, 0.2s;
+                    transition-timing-function: ease-out;
+                    background-image: radial-gradient(circle, transparent 10%, transparent 0%);
+                    background-repeat: no-repeat;
+                    background-position: center;
+                    background-size: 1000% 1000%;
+                ` : "";
+            });
+        }
     });
 
 const NetworkIndicator = () =>
