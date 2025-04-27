@@ -1,5 +1,7 @@
 // by koeqaife ;)
 
+
+import { timeout } from "resource:///com/github/Aylur/ags/utils.js";
 const notifications = await Service.import("notifications");
 const network = await Service.import("network");
 const bluetooth = await Service.import("bluetooth");
@@ -11,6 +13,70 @@ import { MaterialIcon } from "icons.ts";
 import Gtk from "gi://Gtk?version=3.0";
 
 const current_page = Variable(0);
+
+/*function WifiIndicator() {
+    const ssid = Widget.Label({
+        label: "Unknown",
+        visible: false,
+        class_name: "ssid",
+        xalign: 0,
+        vpack: "center",
+        truncate: "end"
+    });
+    const name = Widget.Box({
+        vertical: true,
+        vpack: "center",
+        children: [
+            Widget.Box([
+                Widget.Label({
+                    label: "Internet",
+                    vpack: "center"
+                })
+            ]),
+            ssid
+        ]
+    });
+    return Widget.Box({
+        css: "padding-left: 15px; padding-right: 15px; padding-top: 5px; padding-bottom: 5px;",
+        children: [
+            MaterialIcon("signal_wifi_4_bar", "20px"),
+            name,
+            Widget.Box({
+                hpack: "end",
+                hexpand: true,
+                child: MaterialIcon("chevron_right", "20px", {
+                    class_name: "material_icon icon arrow"
+                })
+            })
+        ],
+        setup: (self) => {
+            self.hook(network, () => {
+                ssid.label = network.wifi.ssid ?? "Unknown";
+                ssid.visible = !!network.wifi.ssid;
+            });
+        }
+    });
+}
+
+const WiredIndicator = () =>
+    Widget.Box({
+        css: "padding-left: 15px; padding-right: 15px; padding-top: 5px; padding-bottom: 5px;",
+        children: [
+            MaterialIcon("settings_ethernet", "20px"),
+            Widget.Label({
+                label: "Internet"
+            })
+        ]
+    });
+
+const NetworkIndicator = () =>
+    Widget.Stack({
+        children: {
+            wifi: WifiIndicator(),
+            wired: WiredIndicator()
+        },
+        shown: network.bind("primary").as((p) => p || "wifi")
+    }); */
 
 function WifiIndicator() {
     const ssid = Widget.Label({
@@ -50,8 +116,8 @@ function WifiIndicator() {
                     '3': MaterialIcon("network_wifi_3_bar", "20px"),
                     '4': MaterialIcon("signal_wifi_4_bar", "20px"),
                 },
-                setup: (self: any) => self.hook(Network, (stack: any) => {
-                    const wifi = Network.wifi;
+                setup: (self: any) => self.hook(network, (stack: any) => {
+                    const wifi = network.wifi;
                     if (!wifi) return;
                     
                     if (!wifi.enabled) {
@@ -74,8 +140,8 @@ function WifiIndicator() {
             })
         ],
         setup: (self: any) => {
-            self.hook(Network, () => {
-                const wifi = Network.wifi;
+            self.hook(network, () => {
+                const wifi = network.wifi;
                 ssid.label = wifi?.ssid ?? "Unknown";
                 ssid.visible = !!wifi?.ssid;
             });
@@ -85,6 +151,7 @@ function WifiIndicator() {
 
 const WiredIndicator = () =>
     Widget.Box({
+        css: "padding-left: 15px; padding-right: 15px; padding-top: 5px; padding-bottom: 5px;",
         children: [
             //MaterialIcon("lan", "20px"),
             Widget.Stack({
@@ -95,14 +162,14 @@ const WiredIndicator = () =>
                     'connected': MaterialIcon("lan", "20px"),
                     'connecting': MaterialIcon("settings_ethernet", "20px"),
                 },
-                setup: (self) => self.hook(Network, stack => {
-                    if (!Network.wired)
+                setup: (self) => self.hook(network, stack => {
+                    if (!network.wired)
                         return;
 
-                    const { internet } = Network.wired;
+                    const { internet } = network.wired;
                     if (['connecting', 'connected'].includes(internet))
                         stack.shown = internet;
-                    else if (Network.connectivity !== 'full')
+                    else if (network.connectivity !== 'full')
                         stack.shown = 'disconnected';
                     else
                         stack.shown = 'fallback';
@@ -113,26 +180,10 @@ const WiredIndicator = () =>
             })
         ],
         setup: (self: any) => {
-            self.hook(Network, () => {
-                const connected = Network.wired?.enabled;
-                self.css = connected ? `
-                    padding-left: 15px;
-                    padding-right: 15px;
-                    padding-top: 5px;
-                    padding-bottom: 5px;
-                    background: @surfaceContainer;
-                    border: none;
-                    outline: none;
-                    transition-property: border-image, background-size, background-image, color, background-color, border-color;
-                    transition-duration: 0.3s, 0.3s, 0.3s, 0.2s, 0.2s, 0.2s;
-                    transition-timing-function: ease-out;
-                    background-image: radial-gradient(circle, transparent 10%, transparent 0%);
-                    background-repeat: no-repeat;
-                    background-position: center;
-                    background-size: 1000% 1000%;
-                ` : "";
+            self.hook(network, () => {
+                const connected = !!network.wired;
             });
-        }
+        }        
     });
 
 const NetworkIndicator = () =>
