@@ -2,6 +2,7 @@
 
 import { RegularWindow } from "apps/window";
 import { Network } from "./network";
+import { WiredNetwork } from "./wirednetwork";
 import { Bluetooth } from "./bluetooth";
 import { Appearance } from "./appearance";
 import { Wallpapers } from "./wallpapers";
@@ -36,7 +37,8 @@ function Settings(cur_tab: string) {
     const stack = Widget.Stack({
         children: {
             none: Widget.Box({ visible: true }),
-            network: Page(Network(), "Network"),
+            network: Page(Network(), "Internet (Wireless)"),
+            wirednetwork: Page(WiredNetwork(), "Internet (Wired)"),
             bluetooth: Page(Bluetooth(), "Bluetooth"),
             appearance: Page(Appearance(), "Appearance"),
             wallpaper: Page(Wallpapers(), "Wallpapers"),
@@ -80,7 +82,8 @@ function Settings(cur_tab: string) {
         class_name: "sidebar",
         spacing: 2,
         children: [
-            Row("network", "Network", "signal_wifi_4_bar"),
+            Row("network", "Internet (Wireless)", "signal_wifi_4_bar"),
+            Row("wirednetwork", "Internet (Wired)", "lan"),
             Row("bluetooth", "Bluetooth", "bluetooth"),
             Widget.Separator(),
             Row("appearance", "Appearance", "palette"),
