@@ -109,6 +109,7 @@ export const Applauncher = () => {
             menu.popup_at_pointer(event);
         },
         child: Widget.Box({
+            css: 'margin-left: 20px; background-color: @surfaceContainer; border-radius: 20px; padding-top: 15px; padding-bottom: 15px;',
             vertical: true,
             class_name: "applauncher_box",
             vexpand: true,

@@ -345,34 +345,94 @@ function OpenSideLeft() {
 }
 
 function Wifi() {
-    return Widget.Button({
-        class_name: "bar_wifi",
-        on_primary_click_release: () => {
-            OpenSettings("network");
-        },
-        on_secondary_click_release: (_, event) => {
-            const nm_applet = systemtray.items.find((item) => item.id == "nm-applet");
-            if (nm_applet) {
-                nm_applet.openMenu(event);
-            } else {
-                Utils.execAsync("nm-connection-editor").catch(print);
-            }
-        },
-        child: MaterialIcon("signal_wifi_off", "16px"),
-        tooltip_text: "Disabled"
+    // Function to create an Ethernet button
+    const createEthernetButton = () => Widget.Button({
+        class_name: "bar_ethernet",
+        on_primary_click_release: () => OpenSettings("wirednetwork"),
+        on_secondary_click_release: (_, event) => handleNmApplet(event),
+        child: MaterialIcon("lan", "16px"),
+        tooltip_text: "Ethernet: Disconnected"
     }).hook(network, (self) => {
         try {
-            if (network.wifi.enabled) {
-                self.tooltip_text = network.wifi.ssid || "Unknown";
-                self.child.label = MATERIAL_SYMBOL_SIGNAL_STRENGTH[network.wifi.icon_name] || "signal_wifi_off";
+            if (network.wired && network.wired.internet) {
+                self.tooltip_text = `Ethernet: Connected`;
+                self.child.label = "lan";
+                self.visible = true;
             } else {
-                self.tooltip_text = "Disabled";
+                self.tooltip_text = "Ethernet: Disconnected";
+                self.child.label = "lan_off";
+                self.visible = network.wired && !!network.wired
+            }
+        } catch (e) {
+            print("Error updating ethernet icon:", e);
+        }
+    });
+
+    // Function to create a Wi-Fi button
+    const createWifiButton = () => Widget.Button({
+        class_name: "bar_wifi",
+        on_primary_click_release: () => OpenSettings("network"),
+        on_secondary_click_release: (_, event) => handleNmApplet(event),
+        child: MaterialIcon("signal_wifi_off", "16px"),
+        tooltip_text: "Wi-Fi: Disabled",
+        css: "margin-right: 6px;"
+    }).hook(network, (self) => {
+        try {
+            if (network.wifi && network.wifi.enabled) {
+                self.tooltip_text = `Wi-Fi: ${network.wifi.ssid || "Unknown"}`;
+                self.child.label = MATERIAL_SYMBOL_SIGNAL_STRENGTH[network.wifi.icon_name] || "signal_wifi_off";
+                self.visible = true;
+            } else {
+                self.tooltip_text = "Wi-Fi: Disabled";
                 self.child.label = "signal_wifi_off";
+                self.visible = false;
             }
         } catch (e) {
             print("Error updating wifi icon:", e);
         }
     });
+
+    // Create separate instances for each stack scenario
+    const wifiOnlyButton = createWifiButton();
+    const ethernetOnlyButton = createEthernetButton();
+    const wifiBothButton = createWifiButton();
+    const ethernetBothButton = createEthernetButton();
+
+    const networkBox = Widget.Box({
+        children: [wifiBothButton, ethernetBothButton]
+    });
+
+    const stack = Widget.Stack({
+        transition: "slide_left_right",
+        children: {
+            "wifi-only": wifiOnlyButton,
+            "ethernet-only": ethernetOnlyButton,
+            "both": networkBox
+        }
+    });
+
+    // Update stack visibility based on network state
+    stack.hook(network, (self) => {
+        const wifiConnected = network.wifi?.enabled && network.wifi.internet;
+        const ethernetConnected = network.wired?.internet;
+
+        if (wifiConnected && ethernetConnected) {
+            self.shown = "both";
+        } else if (wifiConnected) {
+            self.shown = "wifi-only";
+        } else if (ethernetConnected) {
+            self.shown = "ethernet-only";
+        } else {
+            self.shown = "wifi-only"; // Show Wi-Fi even if disconnected
+        }
+    });
+
+    return stack;
+}
+
+function handleNmApplet(event) {
+    const nmApplet = systemtray.items.find(item => item.id === "nm-applet");
+    nmApplet ? nmApplet.openMenu(event) : Utils.execAsync("nm-connection-editor");
 }
 
 function Bluetooth() {
@@ -501,7 +561,7 @@ function TaskBar() {
                 if (client.class === "com.github.Aylur.ags") {
                     icon =
                         client.initialTitle === "Settings"
-                            ? "emblem-system-symbolic"
+                            ? "preferences-system-symbolic"
                             : client.initialTitle === "Emoji Picker"
                             ? "face-smile-symbolic"
                             : undefined;

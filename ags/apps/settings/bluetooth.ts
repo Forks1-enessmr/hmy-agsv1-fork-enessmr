@@ -91,8 +91,7 @@ const DeviceMenu = (device: BluetoothDevice) => {
     });
 };
 
-const DeviceItem = (_device: BluetoothDevice) => {
-    let device = _device;
+const DeviceItem = (device: BluetoothDevice) => {
     const icon = Widget.Icon({
         icon: `${device.icon_name}-symbolic`,
         hpack: "center",
@@ -132,8 +131,8 @@ const DeviceItem = (_device: BluetoothDevice) => {
         }),
         attribute: {
             address: device.address,
-            update: (_device: BluetoothDevice) => {
-                device = _device;
+            update: (device: BluetoothDevice) => {
+                device = device;
                 button.attribute.address = device.address;
                 icon.icon = `${device.icon_name}-symbolic`;
 

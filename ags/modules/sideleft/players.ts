@@ -163,7 +163,7 @@ function Player(player: MprisPlayer) {
 export function Media() {
     return Widget.Box({
         vertical: true,
-        css: "min-height: 2px; min-width: 2px;",
+        css: "min-height: 2px; min-width: 2px; margin-left: 10px; background-color: @surfaceContainer; border-radius: 20px; padding-top: 10px; padding-bottom: 10px; padding-left: 10px;",
         vpack: "start",
         visible: players.as((p) => p.length > 0),
         children: players.as((p) => p.map(Player))

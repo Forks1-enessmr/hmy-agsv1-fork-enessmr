@@ -124,7 +124,7 @@ const textboxArea = Widget.Box({
 const GeminiInfo = () => {
     const geminiLogo = Widget.Icon({
         hpack: "center",
-        class_name: "info",
+        class_name: "info geminilogo",
         icon: `google-gemini-symbolic`
     });
     return Widget.Box({
@@ -321,6 +321,7 @@ const geminiView = Widget.Box({
 
 export const geminiPage = Widget.Box({
     class_name: "page gemini",
+    css: 'margin-left: 20px; background-color: @surfaceContainer; border-radius: 20px; padding-top: 15px; padding-bottom: 15px; padding-left: 15px; padding-right: 4px;',
     vertical: true,
     children: [geminiView, geminiCommands, textboxArea]
 });
