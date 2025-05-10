@@ -83,6 +83,8 @@ install_microtex() {
 }
 
 install_agsv1() {
+    sudo rm -rf ~/dotfiles/setup/agsv1
+    git clone https://github.com/enessmr/agsv1-hmy-PKGBUILD.git ~/dotfiles/setup/agsv1
     cd ~/dotfiles/setup/agsv1/
     execute_command makepkg -si
 }
