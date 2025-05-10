@@ -175,7 +175,7 @@ EOF
 build() {
   cd "$srcdir/$_pkgname-$pkgver"
   npm install
-  arch-meson --wipe build --libdir "lib/$_pkgname" -Dbuild_types=true
+  arch-meson --wipe --reconfigure build --libdir "lib/$_pkgname" -Dbuild_types=true
   meson compile -C build
 }
 
