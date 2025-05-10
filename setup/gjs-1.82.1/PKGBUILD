@@ -1,4 +1,4 @@
-# Maintainer: Your Name <your.email@example.com>
+# GJS PKGBUILD (fixed by claude.ai)
 
 pkgname=gjs
 pkgver=1.82.1
