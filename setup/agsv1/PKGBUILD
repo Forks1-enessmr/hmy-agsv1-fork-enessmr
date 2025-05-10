@@ -175,8 +175,7 @@ EOF
 build() {
   cd "$srcdir/$_pkgname-$pkgver"
   npm install
-  meson --wipe --reconfigure setup --prefix /usr --libexecdir lib --sbindir bin --buildtype plain --auto-features enabled --wrap-mode nodownload -D b_pie=true -D python.bytecompile=1 build --libdir lib/ags -Dbuild_types=true
-  meson build
+  arch-meson --wipe --reconfigure build --libdir "lib/$_pkgname" -Dbuild_types=true
   meson compile -C build
 }
 
