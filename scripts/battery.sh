@@ -1,7 +1,6 @@
 #!/bin/bash
 
-# This script is used for the lockscreen battery indicator.
-
+BAT_PATH=""
 for bat in /sys/class/power_supply/BAT*; do
     if [ -e "$bat/uevent" ]; then
         BAT_PATH="$bat"
@@ -9,18 +8,22 @@ for bat in /sys/class/power_supply/BAT*; do
     fi
 done
 
+HAS_BATTERY=true
 if [ -z "$BAT_PATH" ]; then
-    echo "No battery found."
-    exit 1
+    HAS_BATTERY=false
+    POWER_SUPPLY_CAPACITY=100
+    POWER_SUPPLY_STATUS="Full"
 fi
 
-source "$BAT_PATH/uevent"
+if [ "$HAS_BATTERY" = true ]; then
+    source "$BAT_PATH/uevent"
+fi
 
 declare -A battery_icons_charging=(
     [100]="battery_charging_full"
-    [90]="battery_charging_90"
+    [90]="battery_charging_80"
     [80]="battery_charging_80"
-    [70]="battery_charging_80"
+    [70]="battery_charging_60"
     [60]="battery_charging_60"
     [50]="battery_charging_50"
     [40]="battery_charging_30"
@@ -32,19 +35,28 @@ declare -A battery_icons_charging=(
 
 declare -A battery_icons=(
     [100]="battery_full"
-    [90]="battery_6_bar"
+    [90]="battery_5_bar"
     [80]="battery_5_bar"
     [70]="battery_5_bar"
-    [60]="battery_4_bar"
-    [50]="battery_3_bar"
-    [40]="battery_2_bar"
-    [30]="battery_2_bar"
-    [20]="battery_1_bar"
-    [10]="battery_1_bar"
+    [60]="battery_5_bar"
+    [50]="battery_4_bar"
+    [40]="battery_3_bar"
+    [30]="battery_3_bar"
+    [20]="battery_2_bar"
+    [10]="battery_alert"
     [0]="battery_alert"
 )
 
+declare -A no_battery_icon=(
+    [default]="power"
+)
+
 get_closest_battery_icon() {
+    if [ "$HAS_BATTERY" = false ]; then
+        echo "${no_battery_icon[default]}"
+        return
+    fi
+
     local level="$1"
     local charging="$2"
     local -n icons_array
@@ -68,21 +80,26 @@ get_closest_battery_icon() {
 }
 
 icon() {
+    if [ "$HAS_BATTERY" = false ]; then
+        echo "${no_battery_icon[default]}"
+        return
+    fi
+
     local capacity="$POWER_SUPPLY_CAPACITY"
     local charging="false"
 
-    if [ "$POWER_SUPPLY_STATUS" = "Charging" ]; then
+    if [[ "$POWER_SUPPLY_STATUS" == "Charging" || "$POWER_SUPPLY_STATUS" == "Full" ]]; then
         charging="true"
     fi
 
     get_closest_battery_icon "$capacity" "$charging"
 }
 
-info() {
-    cat "$BAT_PATH/uevent"
-}
-
 status() {
+    if [ "$HAS_BATTERY" = false ]; then
+        echo "No battery found."
+        return
+    fi
     echo "$POWER_SUPPLY_CAPACITY%"
 }
 

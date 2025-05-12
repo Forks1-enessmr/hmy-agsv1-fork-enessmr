@@ -181,6 +181,7 @@ function WeatherSecondCard(weather: WeatherJson) {
 
 export function WeatherBox() {
     return Widget.Box({
+        css: 'margin-left: 20px; background-color: @surfaceContainer; border-radius: 20px; padding-top: 15px; padding-bottom: 15px; padding-left: 15px; padding-right: 15px;',
         class_name: "weather page",
         hexpand: true,
         vertical: true,
