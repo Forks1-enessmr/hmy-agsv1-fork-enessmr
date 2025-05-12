@@ -15,9 +15,13 @@ get_swap_usage() {
 }
 
 get_cpu_temp() {
+<<<<<<< HEAD
      # sensors | grep -i 'core ' | awk '{sum+=$3; count+=1} END {if (count > 0) print sum/count; else print "Undefined"}'
      sensors | grep -i 'Tctl' | awk '{sum+=$2; count+=1} END {if (count > 0) print sum/count; else print "Undefined"}'
 
+=======
+    sensors | grep -i 'Tctl' | awk '{sum+=$2; count+=1} END {if (count > 0) print sum/count; else print "Undefined" return 1}' || sensors | grep -i 'core ' | awk '{sum+=$3; count+=1} END {if (count > 0) print sum/count; else print "Undefined"}'
+>>>>>>> 0540ee2a0082fc98ea991111b9b8c75a30623805
 }
 
 get_cpu_name() {

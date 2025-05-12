@@ -83,7 +83,14 @@ install_microtex() {
 }
 
 install_agsv1() {
+    sudo rm -rf ~/dotfiles/setup/agsv1
+    git clone https://github.com/enessmr/agsv1-hmy-PKGBUILD.git ~/dotfiles/setup/agsv1
     cd ~/dotfiles/setup/agsv1/
+    execute_command makepkg -si
+}
+
+install_gjs-1_82_1() {
+    cd ~/dotfiles/setup/gjs-1.82.1/
     execute_command makepkg -si
 }
 
@@ -109,6 +116,7 @@ install_packages() {
         python-materialyoucolor-git gtksourceview3 gtksourceviewmm cairomm \
         gtkmm3 tinyxml2 python-requests python-numpy
     install_agsv1
+    install_gjs-1_82_1
 }
 
 setup_yay() {

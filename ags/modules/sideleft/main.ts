@@ -254,4 +254,8 @@ export const sideleft = popupwindow({
     anchor: ["top", "left", "bottom"],
     css: "min-width: 490px;",
     width_request: 490,
+<<<<<<< HEAD
 });
+=======
+});
+>>>>>>> 0540ee2a0082fc98ea991111b9b8c75a30623805

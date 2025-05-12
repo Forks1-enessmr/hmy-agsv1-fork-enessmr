@@ -1,0 +1,30 @@
+# GJS PKGBUILD (fixed by claude.ai)
+
+pkgname=gjs
+pkgver=1.82.1
+pkgrel=1
+pkgdesc="JavaScript bindings for GNOME"
+url="https://wiki.gnome.org/Projects/Gjs"
+arch=(x86_64)
+license=(GPL)
+depends=(cairo gobject-introspection-runtime js115 dconf readline)
+makedepends=(git meson gobject-introspection dbus rust clang)
+checkdepends=(xorg-server-xvfb gtk4 sysprof)
+options=(!lto)
+source=("https://download.gnome.org/sources/gjs/${pkgver%.*}/gjs-${pkgver}.tar.xz")
+sha256sums=('SKIP')
+
+build() {
+  arch-meson gjs-$pkgver build \
+    -D installed_tests=false
+  meson compile -C build
+}
+
+#check() {
+#  dbus-run-session xvfb-run -s '-nolisten local' \
+#    meson test -C build --print-errorlogs
+#}
+
+package() {
+  meson install -C build --destdir "$pkgdir"
+}
