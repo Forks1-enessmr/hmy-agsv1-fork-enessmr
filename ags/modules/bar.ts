@@ -63,7 +63,7 @@ function getIconNameFromClass(windowClass: string) {
         let homeDir = GLib.get_home_dir();
         let systemDataDirs = GLib.get_system_data_dirs().map((dir) => dir + "/applications");
         let dataDirs = systemDataDirs.concat([homeDir + "/.local/share/applications"]);
-        let icon: string | undefined;
+        let icon2: string | undefined;
 
         for (let dir of dataDirs) {
             let applicationsGFile = Gio.File.new_for_path(dir);
@@ -87,7 +87,7 @@ function getIconNameFromClass(windowClass: string) {
                     let matches = /Icon=(\S+)/.exec(decoder.decode(fileContents[1]));
                     if (matches && matches[1]) {
                         if (desktopFile.toLowerCase().includes(formattedClass)) {
-                            icon = matches[1];
+                            icon2 = matches[1];
                             break;
                         }
                     }
@@ -95,9 +95,9 @@ function getIconNameFromClass(windowClass: string) {
             }
 
             enumerator.close(null);
-            if (icon) break;
+            if (icon2) break;
         }
-        return Utils.lookUpIcon(icon) ? icon : "image-missing";
+        return Utils.lookUpIcon(icon2) ? icon2 : "image-missing";
     } catch (e) {
         print("Error getting icon name from class:", e);
         return "image-missing";
@@ -537,7 +537,8 @@ function TaskBar() {
     if (!config.config.show_taskbar) {
         return undefined;
     }
-    let globalWidgets: Button<Icon<any>, any>[] = [];
+    // Update type to be more generic to accommodate both Icon and Label children
+    let globalWidgets: Button<any, any>[] = [];
 
     function Clients(clients: Client[]) {
         const currentClientIds = clients.map((client) => client.address);
@@ -553,29 +554,37 @@ function TaskBar() {
         clients.forEach((client) => {
             if (client.class === "Alacritty") return;
 
-            let widget = globalWidgets.find((w) => w.attribute.client.address === client.address);
-            if (widget) {
-                widget.tooltip_markup = client.title;
+            const widgetIndex = globalWidgets.findIndex((w) => w.attribute.client.address === client.address);
+            if (widgetIndex >= 0) {
+                globalWidgets[widgetIndex].tooltip_markup = client.title;
             } else {
-                let icon: string | undefined;
+                let materialIcon: string | undefined;
+                let themeIcon: string | undefined;
+                
+                // Only use Material Icons for AGS applications
                 if (client.class === "com.github.Aylur.ags") {
-                    icon =
-                        client.initialTitle === "Settings"
-                            ? "preferences-system-symbolic"
-                            : client.initialTitle === "Emoji Picker"
-                            ? "face-smile-symbolic"
-                            : undefined;
+                    materialIcon = client.initialTitle === "Settings"
+                        ? "settings"
+                        : client.initialTitle === "Emoji Picker"
+                        ? "mood"
+                        : "widgets";
                 } else {
-                    icon = getIconNameFromClass(client.class);
+                    // For all other apps, use the icon theme
+                    themeIcon = getIconNameFromClass(client.class);
                 }
 
-                widget = Widget.Button({
+                const widget = Widget.Button({
                     attribute: {
                         client: client,
                         workspace: client.workspace,
                         pid: client.pid
                     },
-                    child: Widget.Icon({ icon, size: 16 }),
+                    child: Widget.Box({
+                        children: [materialIcon 
+                            ? MaterialIcon(materialIcon, "16px")
+                            : Widget.Icon({ icon: themeIcon || "application-x-executable", size: 16 })
+                        ]
+                    }),
                     tooltip_markup: client.title,
                     on_clicked: () => focus(client)
                 });
