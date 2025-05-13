@@ -25,7 +25,10 @@ I'm creating v2 version for this dotfiles, so for any spoilers go to discord ser
 ### Installation
 
 **⚠️ Known Issues:** 
-- Ags crashes -> can be fixed with downgrading gjs to 1.82.1
+- JSON.parse fails -> Wait for AIs to give the decode or stringify to fix
+
+**⚠️ Previous Known Issues: **
+- Ags crashes -> can be fixed by downgrading gjs to 1.82.1 (solved now)
 
 ```sh
 sudo pacman -Syu
