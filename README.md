@@ -25,7 +25,7 @@ I'm creating v2 version for this dotfiles, so for any spoilers go to discord ser
 ### Installation
 
 **⚠️ Known Issues:** 
-- JSON.parse fails -> Wait for AIs to give the decode or stringify to fix
+- JSON.parse fails -> Wait for AIs to give the decode or stringify example to fix
 
 **⚠️ Previous Known Issues:**
 - Ags crashes -> can be fixed by downgrading gjs to 1.82.1 (solved now)
@@ -34,7 +34,7 @@ I'm creating v2 version for this dotfiles, so for any spoilers go to discord ser
 sudo pacman -Syu
 sudo pacman -S git
 cd ~
-git clone --depth=1 https://github.com/koeqaife/hyprland-material-you.git
+git clone --depth=1 https://github.com/enessmr/hyprland-material-you.git
 mv hyprland-material-you dotfiles
 cd dotfiles
 ./install.sh
