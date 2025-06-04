@@ -35,6 +35,7 @@ highlight {
     border: none;
     outline: none;
     box-shadow: none;
+    text-shadow: none;
 
     transition-property: border-image, background-size, background-image, color, background-color, border-color;
     transition-duration: 0.3s, 0.3s, 0.3s, 0.2s, 0.2s, 0.2s;
@@ -225,19 +226,29 @@ window.notification_popups box.notifications {
 
 .notification {
     min-width: 350px;
-    border-radius: 20px;
+    border-radius: 40px;
+    padding: 1em;
+    margin-bottom: 2px;
+    background-color: @surfaceContainerLow;
+}
+
+.notification .notification_popuponly {
+    min-width: 50rem;
+    border-radius: 40px;
     padding: 1em;
     margin-bottom: 2px;
     background-color: @surfaceContainerLow;
 }
 
 .notification.critical {
-    border: 2px solid @error;
+    border: 2px solid @onSecondaryContainer;
+    background-color: @secondaryContainer;
 }
 
 .notification_title {
+    font-weight: bold;
     color: @foreground;
-    font-size: 1.4em;
+    font-size: 1.0em;
 }
 
 .notification_body {
@@ -260,10 +271,6 @@ window.notification_popups box.notifications {
 
 .notification_actions .notification_action_button:last-child {
     margin-right: 0;
-}
-
-.notification_time {
-    color: @primary;
 }
 
 .notification_close .icon {
@@ -473,7 +480,7 @@ window.notification_popups box.notifications {
     margin-left: 10px;
     margin-right: 9px;
     margin-top: 4px;
-    border-radius: 6px;
+    border-radius: 2px;
     padding: 15px;
     background-color: @surfaceContainerLow;
     box-shadow: 0px 1px 3px rgba(0, 0, 0, 0.12), 0px 1px 2px rgba(0, 0, 0, 0.24);
@@ -481,11 +488,11 @@ window.notification_popups box.notifications {
 }
 
 .notifications_sidebar_scrollable viewport > box > box > .first .notification {
-    border-radius: 14px 14px 6px 6px;
+    border-radius: 20px 20px 2px 2px;
 }
 
 .notifications_sidebar_scrollable viewport > box > box > .last .notification {
-    border-radius: 6px 6px 14px 14px;
+    border-radius: 2px 2px 20px 20px;
 }
 
 .notifications_sidebar_scrollable viewport > box > box > .margin_bottom .notification {
@@ -493,7 +500,7 @@ window.notification_popups box.notifications {
 }
 
 .notifications_sidebar_scrollable viewport > box > box > .first.last .notification {
-    border-radius: 14px;
+    border-radius: 20px;
 }
 
 .notifications_sidebar_scrollable .notification_time {

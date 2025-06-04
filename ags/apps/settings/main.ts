@@ -5,6 +5,7 @@ import { Network } from "./network";
 import { WiredNetwork } from "./wirednetwork";
 import { Bluetooth } from "./bluetooth";
 import { Appearance } from "./appearance";
+//import { Unrelated } from "./unrelatedjson"; // I will work with that later
 import { Wallpapers } from "./wallpapers";
 import { Info } from "./info";
 import { Apps } from "./apps";
@@ -42,6 +43,7 @@ function Settings(cur_tab: string) {
             bluetooth: Page(Bluetooth(), "Bluetooth"),
             appearance: Page(Appearance(), "Appearance"),
             wallpaper: Page(Wallpapers(), "Wallpapers"),
+//            unrelated: Page(Unrelated(), "Unrelated JSON"),
             info: Page(Info(), "Info"),
             apps: Page(Apps(), "Apps"),
             weather: Page(Weather(), "Weather"),
@@ -89,6 +91,8 @@ function Settings(cur_tab: string) {
             Row("appearance", "Appearance", "palette"),
             Row("wallpaper", "Wallpapers", "image"),
             Row("themes", "Themes", "tune"),
+//            Widget.Separator(),
+//            Row("unrelated", "Unrelated JSON", "file_json"),
             Widget.Separator(),
             Row("apps", "Apps", "grid_view"),
             Row("weather", "Weather", "cloud"),

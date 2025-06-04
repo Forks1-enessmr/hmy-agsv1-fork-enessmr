@@ -336,7 +336,7 @@ function OpenSideLeft() {
     const button = Widget.Button({
         class_name: "filled_tonal_button",
         on_clicked: () => {
-            App.toggleWindow("sideleft");
+            Utils.execAsync("agsv1 -t 'sideleft'");
         },
         child: MaterialIcon("dock_to_right")
     });
@@ -521,6 +521,7 @@ function OpenSideBar() {
         class_name: "filled_tonal_button",
         on_primary_click_release: () => {
             App.toggleWindow("sidebar");
+            console.log("I toggled!");
         },
         on_secondary_click_release: () => {
             OpenSettings();

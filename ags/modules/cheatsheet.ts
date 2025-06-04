@@ -336,61 +336,64 @@ const createCategoryBox = (category, commands) => {
 const PageContent = () => {
     const COLUMNS = 2;
     const ROWS = 3;
+    
+    // Animation state tracking
+    let isAnimating = false;
+    let currentContainer: any = null;
+    let nextContainer: any = null;
 
     const container = Widget.Box({
         class_name: "content-wrapper",
         vertical: true,
         children: [
-            Widget.Box({
-                class_name: "category-container",
-                vertical: true,
+            Widget.Stack({
+                class_name: "category-stack",
+                transition_type: Gtk.StackTransitionType.SLIDE_LEFT_RIGHT,
+                transition_duration: 300, // Material 3 standard duration
                 setup: (self) => {
-                    const rows = Array.from({ length: ROWS }, () => 
-                        Widget.Box({
-                            class_name: "category-row",
-                            hexpand: true,
-                            homogeneous: true,
-                            spacing: 12,
-                            vexpand: true
-                        })
-                    );
-
-                    function updateCategories() {
-                        // Safely clear existing content
-                        rows.forEach(row => {
-                            row.get_children().forEach(child => child.destroy());
-                            row.children = [];
-                        });
-
-                        const allCategories = Object.keys(keybindings.value);
-                        const totalPages = Math.ceil(allCategories.length / CATEGORIES_PER_PAGE);
+                    currentContainer = createCategoryContainer();
+                    self.add_named(currentContainer, "page-0");
+                    self.set_visible_child(currentContainer);
+                    
+                    function updateCategories(direction = 0) {
+                        if (isAnimating) return;
+                        isAnimating = true;
                         
-                        // Validate page boundaries
-                        currentPage.value = Math.max(0, Math.min(currentPage.value, totalPages - 1));
+                        // Create new container for next page
+                        nextContainer = createCategoryContainer();
+                        const pageName = `page-${Date.now()}`;
+                        self.add_named(nextContainer, pageName);
                         
-                        const startIdx = currentPage.value * CATEGORIES_PER_PAGE;
-                        const endIdx = Math.min(startIdx + CATEGORIES_PER_PAGE, allCategories.length);
-
-                        // Populate new content
-                        for (let i = startIdx; i < endIdx; i++) {
-                            const category = allCategories[i];
-                            const rowIndex = Math.floor((i - startIdx) / COLUMNS);
-                            
-                            if (rowIndex < ROWS) {
-                                const categoryBox = createCategoryBox(category, keybindings.value[category]);
-                                rows[rowIndex].pack_start(categoryBox, true, true, 0);
-                            }
+                        // Set transition direction based on navigation
+                        if (direction > 0) {
+                            self.transition_type = Gtk.StackTransitionType.SLIDE_LEFT;
+                        } else if (direction < 0) {
+                            self.transition_type = Gtk.StackTransitionType.SLIDE_RIGHT;
+                        } else {
+                            self.transition_type = Gtk.StackTransitionType.CROSSFADE;
                         }
+                        
+                        // Animate to new page
+                        self.set_visible_child_name(pageName);
+                        
+                        // Clean up after animation
+                        Utils.timeout(350, () => {
+                            if (currentContainer && currentContainer.parent) {
+                                self.remove(currentContainer);
+                            }
+                            currentContainer = nextContainer;
+                            nextContainer = null;
+                            isAnimating = false;
+                        });
                     }
 
+                    // Track page direction for proper animation
+                    let lastPage = 0;
                     currentPage.connect("changed", () => {
-                        updateCategories();
-                        self.show_all();
+                        const direction = currentPage.value - lastPage;
+                        lastPage = currentPage.value;
+                        updateCategories(direction);
                     });
-
-                    updateCategories(); // Initial load
-                    
-                    self.pack_start(Widget.Box({ vertical: true, children: rows }), true, true, 0);
                 }
             }),
             PaginationControls()
@@ -400,6 +403,82 @@ const PageContent = () => {
     return container;
 };
 
+// Create category container with enhanced animations
+const createCategoryContainer = () => {
+    const rows = Array.from({ length: 3 }, () => 
+        Widget.Box({
+            class_name: "category-row",
+            hexpand: true,
+            homogeneous: true,
+            spacing: 12,
+            vexpand: true
+        })
+    );
+
+    const allCategories = Object.keys(keybindings.value);
+    const startIdx = currentPage.value * CATEGORIES_PER_PAGE;
+    const endIdx = Math.min(startIdx + CATEGORIES_PER_PAGE, allCategories.length);
+
+    // Add staggered entrance animations
+    for (let i = startIdx; i < endIdx; i++) {
+        const category = allCategories[i];
+        const rowIndex = Math.floor((i - startIdx) / 2);
+        
+        if (rowIndex < 3) {
+            const categoryBox = createAnimatedCategoryBox(category, keybindings.value[category], i - startIdx);
+            rows[rowIndex].pack_start(categoryBox, true, true, 0);
+        }
+    }
+
+    return Widget.Box({
+        class_name: "category-container",
+        vertical: true,
+        children: [Widget.Box({ vertical: true, children: rows })]
+    });
+};
+
+// Enhanced category box with entrance animations
+const createAnimatedCategoryBox = (category: string, commands: Record<string, string>, index: number) => {
+    const box = Widget.Box({
+        class_name: "category animated-category",
+        vertical: true,
+        hexpand: true,
+        css: `
+            opacity: 0;
+            transition: all 0.3s cubic-bezier(0.4, 0.0, 0.2, 1);
+            margin-top: 20px;
+        `,
+        children: [
+            Widget.Box({
+                css: 'box-shadow: none; border: none;',
+                class_name: "category-header",
+                children: [
+                    MaterialIcon(category_icons[category.toLowerCase()] || "category"),
+                    Widget.Label({
+                        label: category,
+                        class_name: "title",
+                        hpack: "start"
+                    })
+                ]
+            }),
+            Widget.Separator(),
+            createCategoryContent(category, commands)
+        ]
+    });
+
+    // Staggered entrance animation
+    Utils.timeout(50 + (index * 100), () => {
+        box.css = `
+            opacity: 1;
+            transition: all 0.4s cubic-bezier(0.4, 0.0, 0.2, 1);
+            margin-top: 0px;
+        `;
+    });
+
+    return box;
+};
+
+// Enhanced pagination with button animations
 const PaginationControls = () => {
     const totalPages = currentPage.bind().transform(p => 
         Math.ceil(Object.keys(keybindings.value).length / CATEGORIES_PER_PAGE)
@@ -414,26 +493,152 @@ const PaginationControls = () => {
             Widget.Button({
                 label: "Previous",
                 sensitive: currentPage.bind().transform(p => p > 0),
-                class_name: "pagination-button-prev",
-                on_clicked: () => currentPage.value--
+                class_name: "pagination-button-prev material-button",
+                css: `
+                    transition: all 0.2s cubic-bezier(0.4, 0.0, 0.2, 1);
+                `,
+                on_clicked: (self) => {
+                    // Button press animation
+                    self.css = `
+                        transition: all 0.1s cubic-bezier(0.4, 0.0, 0.2, 1);
+                    `;
+                    Utils.timeout(100, () => {
+                        self.css = `
+                            transition: all 0.2s cubic-bezier(0.4, 0.0, 0.2, 1);
+                        `;
+                    });
+                    currentPage.value--;
+                }
             }),
             Widget.Label({
                 label: currentPage.bind().transform(p => {
                     const total = Math.ceil(Object.keys(keybindings.value).length / CATEGORIES_PER_PAGE);
                     return `Page ${Math.min(p + 1, total)} of ${total}`;
                 }),
+                class_name: "page-indicator",
+                css: `
+                    transition: all 0.3s cubic-bezier(0.4, 0.0, 0.2, 1);
+                `
             }),
             Widget.Button({
                 label: "Next",
                 sensitive: currentPage.bind().transform(p => 
                     p < Math.ceil(Object.keys(keybindings.value).length / CATEGORIES_PER_PAGE) - 1
                 ),
-                class_name: "pagination-button-next",
-                on_clicked: () => currentPage.value++
+                class_name: "pagination-button-next material-button",
+                css: `
+                    transition: all 0.2s cubic-bezier(0.4, 0.0, 0.2, 1);
+                `,
+                on_clicked: (self) => {
+                    // Button press animation
+                    self.css = `
+                        transition: all 0.1s cubic-bezier(0.4, 0.0, 0.2, 1);
+                    `;
+                    Utils.timeout(100, () => {
+                        self.css = `
+                            transition: all 0.2s cubic-bezier(0.4, 0.0, 0.2, 1);
+                        `;
+                    });
+                    currentPage.value++;
+                }
             })
         ]
     });
 };
+
+// Alternative: Custom slide animation using revealer
+const createCustomSlideTransition = () => {
+    const leftRevealer = Widget.Revealer({
+        transition_type: Gtk.RevealerTransitionType.SLIDE_LEFT,
+        transition_duration: 300,
+        reveal_child: false
+    });
+    
+    const rightRevealer = Widget.Revealer({
+        transition_type: Gtk.RevealerTransitionType.SLIDE_RIGHT,
+        transition_duration: 300,
+        reveal_child: true
+    });
+    
+    return Widget.Overlay({
+        child: rightRevealer,
+        overlays: [leftRevealer],
+        setup: (self) => {
+            // Custom transition logic
+            currentPage.connect("changed", () => {
+                // Hide current, show new with slide effect
+                rightRevealer.reveal_child = false;
+                Utils.timeout(150, () => {
+                    // Update content here
+                    rightRevealer.reveal_child = true;
+                });
+            });
+        }
+    });
+};
+
+// CSS animations for enhanced effects
+const materialAnimationCSS = `
+/* Material 3 Animation Variables */
+:root {
+    --md-sys-motion-duration-short1: 50ms;
+    --md-sys-motion-duration-short2: 100ms;
+    --md-sys-motion-duration-short3: 150ms;
+    --md-sys-motion-duration-short4: 200ms;
+    --md-sys-motion-duration-medium1: 250ms;
+    --md-sys-motion-duration-medium2: 300ms;
+    --md-sys-motion-duration-medium3: 350ms;
+    --md-sys-motion-duration-medium4: 400ms;
+    --md-sys-motion-duration-long1: 450ms;
+    --md-sys-motion-duration-long2: 500ms;
+    --md-sys-motion-duration-long3: 550ms;
+    --md-sys-motion-duration-long4: 600ms;
+    
+    --md-sys-motion-easing-standard: cubic-bezier(0.2, 0.0, 0, 1.0);
+    --md-sys-motion-easing-standard-decelerate: cubic-bezier(0.0, 0.0, 0, 1.0);
+    --md-sys-motion-easing-standard-accelerate: cubic-bezier(0.3, 0.0, 1.0, 1.0);
+    --md-sys-motion-easing-emphasized: cubic-bezier(0.2, 0.0, 0, 1.0);
+    --md-sys-motion-easing-emphasized-decelerate: cubic-bezier(0.05, 0.7, 0.1, 1.0);
+    --md-sys-motion-easing-emphasized-accelerate: cubic-bezier(0.3, 0.0, 0.8, 0.15);
+}
+
+.animated-category {
+    transition: all var(--md-sys-motion-duration-medium2) var(--md-sys-motion-easing-standard);
+}
+
+.material-button {
+    transition: all var(--md-sys-motion-duration-short4) var(--md-sys-motion-easing-standard);
+}
+
+.material-button:hover {
+    transition: all var(--md-sys-motion-duration-short2) var(--md-sys-motion-easing-standard);
+}
+
+.page-slide-enter {
+    margin-left: 100%;
+    opacity: 0;
+}
+
+.page-slide-enter-active {
+    margin-left: 0;
+    margin-right: 0;
+    opacity: 1;
+    transition: all var(--md-sys-motion-duration-medium3) var(--md-sys-motion-easing-emphasized-decelerate);
+}
+
+.page-slide-exit {
+    margin-left: 0;
+    margin-right: 0;
+    opacity: 1;
+}
+
+.page-slide-exit-active {
+    margin-left: 0;
+    margin-right: 100%;
+    opacity: 0;
+    transition: all var(--md-sys-motion-duration-medium3) var(--md-sys-motion-easing-emphasized-accelerate);
+}
+`;
 
 export const cheatsheet = popupwindow({
     name: WINDOW_NAME,

@@ -15,6 +15,7 @@ const NotificationReveal = (notification: NotificationType, visible = false, dis
     const transition_duration = 200;
     const secondRevealer = Widget.Revealer({
         vpack: "center",
+        //hpack: "center",
         child: Notification(notification, dismiss),
         reveal_child: visible,
         transition: "crossfade",

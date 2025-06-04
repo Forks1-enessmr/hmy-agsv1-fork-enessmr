@@ -15,7 +15,24 @@ get_swap_usage() {
 }
 
 get_cpu_temp() {
-    sensors | grep -i 'Tctl' | awk '{sum+=$2; count+=1} END {if (count > 0) print sum/count; else print "Undefined" return 1}' || sensors | grep -i 'core ' | awk '{sum+=$3; count+=1} END {if (count > 0) print sum/count; else print "Undefined"}'
+    # Try to get Tctl average temp first
+    temp=$(sensors 2>/dev/null | grep -i 'Tctl' | awk '{sum+=$2; count+=1} END {if (count > 0) print sum/count; else print ""}')
+    
+    if [[ -n $temp ]]; then
+        echo "$temp"
+        return 0
+    fi
+    
+    # If Tctl not found, try core temps (strip '+' and '°C')
+    temp=$(sensors 2>/dev/null | grep -i 'core ' | awk '{gsub(/[+°C]/,"",$3); sum+=$3; count+=1} END {if (count > 0) print sum/count; else print ""}')
+    
+    if [[ -n $temp ]]; then
+        echo "$temp"
+        return 0
+    fi
+
+    print "Cannot get CPU temp :("
+    return 1
 }
 
 get_cpu_name() {

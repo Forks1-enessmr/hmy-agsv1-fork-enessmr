@@ -35,8 +35,9 @@ function NotificationIcon({ app_entry, app_icon, image }: NotificationType): Box
 
 export const Notification = (notification: NotificationType, dismiss = true) =>
     Widget.Box({
-        class_name: `notification ${notification.urgency}`,
+        class_name: `notification ${notification.urgency} notification_popupOnly`,
         vertical: true,
+        css: "margin: auto;",
         children: [
             Widget.EventBox({
                 on_primary_click: (box) => {
@@ -52,49 +53,46 @@ export const Notification = (notification: NotificationType, dismiss = true) =>
                 },
                 child: Widget.Box({
                     children: [
-                        Widget.Box({
-                            class_name: "notification_icon",
-                            child: NotificationIcon(notification),
-                            vpack: "start"
-                        }),
+                        // Content on the left side
                         Widget.Box({
                             vertical: true,
+                            hexpand: true,
                             children: [
                                 Widget.Box({
                                     children: [
-                                        Widget.Label({
-                                            class_name: "notification_title",
-                                            label: notification.summary,
-                                            justification: "left",
-                                            max_width_chars: 3,
-                                            truncate: "end",
-                                            lines: 1,
-                                            xalign: 0,
+                                        Widget.Box({
                                             hexpand: true,
-                                            tooltip_text: notification.summary
-                                        }),
-                                        Widget.Label({
-                                            class_name: "notification_time",
-                                            label: GLib.DateTime.new_from_unix_local(notification.time).format("%H:%M")
-                                        }),
-                                        Widget.Button({
-                                            class_name: "standard_icon_button notification_close",
-                                            child: MaterialIcon("close"),
-                                            on_clicked: () => {
-                                                if (dismiss) {
-                                                    notification.dismiss();
-                                                } else {
-                                                    notification.close();
-                                                }
-                                            },
-                                            css: "margin-left: 5px;"
+                                            children: [
+                                                Widget.Label({
+                                                    class_name: "notification_title ${notification.urgency}",
+                                                    label: notification.summary,
+                                                    justification: "left",
+                                                    max_width_chars: 30,
+                                                    truncate: "end",
+                                                    lines: 1,
+                                                    xalign: 0,
+                                                    hexpand: true,
+                                                    tooltip_text: notification.summary
+                                                }),
+                                                // Notification time label moved here
+                                                Widget.Label({
+                                                    class_name: `notification_time ${notification.urgency}`,
+                                                    label: " • " + GLib.DateTime.new_from_unix_local(notification.time).format("%H:%M"),
+                                                    justification: "right",
+                                                    max_width_chars: 30,
+                                                    truncate: "end",
+                                                    css: "margin-right: 150px;",
+                                                    lines: 1,
+                                                    xalign: 0
+                                                })
+                                            ]
                                         })
                                     ]
                                 }),
                                 Widget.Label({
                                     class_name: "notification_body",
                                     justification: "left",
-                                    max_width_chars: 24,
+                                    max_width_chars: 40,
                                     lines: 3,
                                     truncate: "end",
                                     wrap_mode: Pango.WrapMode.WORD_CHAR,
@@ -109,6 +107,25 @@ export const Notification = (notification: NotificationType, dismiss = true) =>
                                       })
                                     : Widget.Box()
                             ]
+                        }),
+                        // Icon on the right side
+                        Widget.Box({
+                            class_name: "notification_icon",
+                            child: NotificationIcon(notification),
+                            vpack: "end",
+                            css: "margin-left: 10px;"
+                        }),
+                        Widget.Button({
+                            class_name: "standard_icon_button notification_close",
+                            child: MaterialIcon("close"),
+                            on_clicked: () => {
+                                if (dismiss) {
+                                    notification.dismiss();
+                                } else {
+                                    notification.close();
+                                }
+                            },
+                            css: "margin-left: 5px;"
                         })
                     ]
                 })
@@ -200,8 +217,11 @@ export function NotificationPopups(
     revealer = NotificationReveal
 ) {
     const list = Widget.Box({
-        vpack: "start",
+        vpack: "center",
+        hpack: "center",
         vertical: true,
+        halign: Gtk.Align.CENTER,
+        valign: Gtk.Align.CENTER,
         children: notifications.popups.map((id) => revealer(id, false, dismiss))
     });
 
@@ -286,20 +306,39 @@ export function NotificationPopups(
 }
 
 export function Notifications(monitor = 0) {
+    const popups = NotificationPopups();
+    
+    const container = Widget.Box({
+        css: "min-width: 2px; min-height: 2px;",
+        class_name: "notifications",
+        vertical: true,
+        children: [
+            popups,
+            Widget.Revealer({
+                child: Widget.Label({
+                    label: ""
+                }),
+                reveal_child: true,
+                transition: "slide_down"
+            })
+        ],
+        setup: (self) => {
+            popups.connect("notify::children", () => {
+                type RevealerType = ReturnType<typeof Widget.Revealer>;
+                (self.children[1] as RevealerType).reveal_child = popups.children.length === 0;
+            });
+        }
+    });
+
     const window = Widget.Window({
         monitor,
         name: `notifications${monitor}`,
         class_name: "notification_popups",
-        anchor: ["top", "right"],
+        anchor: ["top", "left", "right"],
         type: Gtk.WindowType.POPUP,
-        child: Widget.Box({
-            css: "min-width: 2px; min-height: 2px;",
-            class_name: "notifications",
-            hexpand: true,
-            vexpand: true,
-            child: NotificationPopups()
-        }),
+        child: container,
         visible: true
     });
+    
     return window;
 }
