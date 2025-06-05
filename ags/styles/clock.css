@@ -1,0 +1,21 @@
+/* -----------------------------------------------------
+ * Clock
+ * ----------------------------------------------------- */
+
+.clock {
+    background-color: @surfaceContainer;
+    border-radius: 16px;
+    padding: 2px 10px 0px 10px;
+}
+
+.time {
+    color: @onSurface;
+    font-size: 14px;
+    font-feature-settings: "tnum";
+}
+
+.date {
+    color: @onSurface;
+    font-size: 10px;
+    font-feature-settings: "tnum";
+}

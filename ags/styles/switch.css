@@ -1,0 +1,74 @@
+/* -----------------------------------------------------
+ * Switch
+ * ----------------------------------------------------- */
+
+switch {
+    border: 2px solid;
+    border-radius: 100px;
+    border-color: @outline;
+    background-color: @surfaceContainerHighest;
+    min-height: 20px;
+    padding: 1px;
+}
+
+switch slider {
+    border-radius: 100%;
+    background-color: @outline;
+    min-height: 10px;
+    margin: 2px;
+    min-height: 8px;
+    min-width: 16px;
+    transition: all 0.2s ease-in-out;
+    transition-property: color, background-color, border-color;
+}
+
+switch:disabled {
+    background-color: mix(@surfaceContainerHighest, transparent, 0.3);
+    border-color: mix(@onSurface, transparent, 0.3);
+}
+
+switch:disabled slider {
+    background-color: mix(@onSurface, transparent, 0.3);
+}
+
+switch:hover,
+switch:active {
+    background-color: mix(@surfaceContainerHighest, @onSurface, 0.08);
+}
+
+switch:hover slider,
+switch:active slider {
+    background-color: @onSurfaceVariant;
+}
+
+switch:checked {
+    background-color: @primary;
+    border-color: transparent;
+}
+
+switch:checked slider {
+    background-color: @onPrimary;
+    border-color: transparent;
+    margin: 0px;
+    min-height: 10px;
+    min-width: 20px;
+}
+
+switch:checked:disabled {
+    background-color: mix(@onSurface, transparent, 0.3);
+    border-color: transparent;
+}
+
+switch:checked:disabled slider {
+    background-color: mix(@surface, transparent, 0.3);
+}
+
+switch:checked:hover,
+switch:checked:active {
+    background-color: @primary;
+}
+
+switch:checked:hover slider,
+switch:checked:active slider {
+    background-color: @primaryContainer;
+}

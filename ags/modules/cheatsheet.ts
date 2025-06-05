@@ -334,74 +334,114 @@ const createCategoryBox = (category, commands) => {
 };
 
 const PageContent = () => {
-    const COLUMNS = 2;
-    const ROWS = 3;
+    // Simple approach: recreate the entire stack content on page change
+    // This avoids complex GTK container manipulation
     
-    // Animation state tracking
-    let isAnimating = false;
-    let currentContainer: any = null;
-    let nextContainer: any = null;
+    const stackWidget = Widget.Stack({
+        class_name: "category-stack",
+        transition_type: Gtk.StackTransitionType.SLIDE_LEFT_RIGHT,
+        transition_duration: 300,
+        children: {
+            "current": createCategoryContainer()
+        },
+        shown: "current"
+    });
 
     const container = Widget.Box({
         class_name: "content-wrapper",
         vertical: true,
         children: [
-            Widget.Stack({
-                class_name: "category-stack",
-                transition_type: Gtk.StackTransitionType.SLIDE_LEFT_RIGHT,
-                transition_duration: 300, // Material 3 standard duration
-                setup: (self) => {
-                    currentContainer = createCategoryContainer();
-                    self.add_named(currentContainer, "page-0");
-                    self.set_visible_child(currentContainer);
-                    
-                    function updateCategories(direction = 0) {
-                        if (isAnimating) return;
-                        isAnimating = true;
-                        
-                        // Create new container for next page
-                        nextContainer = createCategoryContainer();
-                        const pageName = `page-${Date.now()}`;
-                        self.add_named(nextContainer, pageName);
-                        
-                        // Set transition direction based on navigation
-                        if (direction > 0) {
-                            self.transition_type = Gtk.StackTransitionType.SLIDE_LEFT;
-                        } else if (direction < 0) {
-                            self.transition_type = Gtk.StackTransitionType.SLIDE_RIGHT;
-                        } else {
-                            self.transition_type = Gtk.StackTransitionType.CROSSFADE;
-                        }
-                        
-                        // Animate to new page
-                        self.set_visible_child_name(pageName);
-                        
-                        // Clean up after animation
-                        Utils.timeout(350, () => {
-                            if (currentContainer && currentContainer.parent) {
-                                self.remove(currentContainer);
-                            }
-                            currentContainer = nextContainer;
-                            nextContainer = null;
-                            isAnimating = false;
-                        });
-                    }
-
-                    // Track page direction for proper animation
-                    let lastPage = 0;
-                    currentPage.connect("changed", () => {
-                        const direction = currentPage.value - lastPage;
-                        lastPage = currentPage.value;
-                        updateCategories(direction);
-                    });
-                }
-            }),
+            stackWidget,
             PaginationControls()
         ]
     });
 
+    // Handle page changes by recreating stack content
+    let isAnimating = false;
+    let lastPage = 0;
+    
+    currentPage.connect("changed", () => {
+        if (isAnimating) return;
+        isAnimating = true;
+        
+        const direction = currentPage.value - lastPage;
+        lastPage = currentPage.value;
+        
+        // Set transition direction
+        if (direction > 0) {
+            stackWidget.transition_type = Gtk.StackTransitionType.SLIDE_LEFT;
+        } else if (direction < 0) {
+            stackWidget.transition_type = Gtk.StackTransitionType.SLIDE_RIGHT;
+        } else {
+            stackWidget.transition_type = Gtk.StackTransitionType.CROSSFADE;
+        }
+        
+        // Create new content with updated page data
+        const newContent = createCategoryContainer();
+        const newPageName = `page-${Date.now()}`;
+        
+        // Add new page and transition to it
+        stackWidget.add_named(newContent, newPageName);
+        stackWidget.set_visible_child_name(newPageName);
+        
+        // Clean up old page after transition
+        Utils.timeout(350, () => {
+            // Remove the old "current" page if it exists
+            const oldChild = stackWidget.get_child_by_name("current");
+            if (oldChild) {
+                stackWidget.remove(oldChild);
+            }
+            
+            // Rename the new page to "current" for next iteration
+            // Note: GTK doesn't provide a rename method, so we'll use the timestamp approach
+            isAnimating = false;
+        });
+    });
+
     return container;
 };
+
+// Alternative even simpler approach - just recreate the entire content
+/*const PageContentSimple = () => {
+    const contentBox = Widget.Box({
+        class_name: "category-container-wrapper",
+        child: createCategoryContainer()
+    });
+
+    const container = Widget.Box({
+        class_name: "content-wrapper",
+        vertical: true,
+        children: [
+            contentBox,
+            PaginationControls()
+        ]
+    });
+
+    // Handle page changes by replacing content with fade effect
+    currentPage.connect("changed", () => {
+        // Add fade out effect
+        contentBox.css = `
+            opacity: 0;
+            transition: opacity 150ms cubic-bezier(0.4, 0.0, 0.2, 1);
+        `;
+        
+        // Replace content after fade out
+        Utils.timeout(150, () => {
+            contentBox.child = createCategoryContainer();
+            
+            // Fade back in
+            contentBox.css = `
+                opacity: 1;
+                transition: opacity 200ms cubic-bezier(0.4, 0.0, 0.2, 1);
+            `;
+        });
+    });
+
+    return container;
+};
+
+// Use the simple approach to avoid GTK Stack complexity
+const PageContent = PageContentSimple;*/
 
 // Create category container with enhanced animations
 const createCategoryContainer = () => {

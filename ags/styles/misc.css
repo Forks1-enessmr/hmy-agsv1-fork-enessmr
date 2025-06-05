@@ -1,0 +1,61 @@
+/* -----------------------------------------------------
+ * Misc
+ * ----------------------------------------------------- */
+
+.bold_label {
+    font-weight: bold;
+}
+
+.keyboard {
+    background-color: @surfaceContainer;
+    color: @onSurface;
+    padding: 0px 10px 0px 10px;
+    border-radius: 100px;
+}
+
+.awesome_icon {
+    font-family: "Font Awesome 6 Free";
+}
+
+.battery {
+    background-color: @surfaceContainer;
+    border-radius: 100px;
+    padding: 2px 10px 2px 10px;
+}
+
+.battery label {
+    color: @onSurface;
+    font-size: 16px;
+    font-weight: 300;
+}
+
+.battery .icon {
+    color: @onSurface;
+}
+
+.battery.critical {
+    background-color: @error;
+}
+
+.battery.critical label,
+.battery.critical .icon {
+    color: @onError;
+}
+
+.bar_applets {
+    background-color: @surfaceContainer;
+    border-radius: 100px;
+    padding: 2px 10px 2px 10px;
+    margin: 0px;
+}
+
+.bar_applets .icon {
+    color: @onSurface;
+    font-weight: 600;
+}
+
+.bar_applets button {
+    color: @onSurface;
+    margin: 0px;
+    padding: 0px;
+}

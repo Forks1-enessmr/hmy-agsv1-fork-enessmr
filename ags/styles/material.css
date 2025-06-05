@@ -1,0 +1,15 @@
+/* -----------------------------------------------------
+ * Material
+ * ----------------------------------------------------- */
+
+.material_icon,
+.material_icon * {
+    all: unset;
+    font-family: "Material Symbols Outlined", "Material Symbols Sharp";
+}
+
+@keyframes ripple {
+    to {
+        background-size: 1000% 1000%;
+    }
+}

@@ -1,0 +1,93 @@
+window.bar {
+    background-color: @surface;
+}
+
+.bar label {
+    font-weight: bold;
+}
+
+button,
+box {
+    background: transparent;
+    transition-timing-function: ease-out;
+    background-image: radial-gradient(circle, transparent 10%, transparent 0%);
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: 1000% 1000%;
+    background-color: transparent;
+}
+
+icon {
+    box-shadow: none;
+    text-shadow: none;
+}
+
+button:active,
+box:active {
+    transition-duration: 0.3s, 0ms, 0ms, 0.2s, 0.2s, 0.2s;
+    animation: ripple 0.3s ease-out forwards;
+    background-size: 0% 0%;
+}
+
+highlight {
+    border-radius: 100px;
+}
+
+* {
+    margin: 0px;
+    border: none;
+    outline: none;
+    box-shadow: none;
+    text-shadow: none;
+
+    transition-property: border-image, background-size, background-image, color, background-color, border-color;
+    transition-duration: 0.3s, 0.3s, 0.3s, 0.2s, 0.2s, 0.2s;
+
+    font-family: "Product Sans", Roboto, "Font Awesome 6 Free", Helvetica, Arial, sans-serif;
+}
+
+.corner {
+    background-color: @background;
+    border-radius: 34px;
+}
+
+tooltip {
+    background-color: @surfaceContainer;
+    border-radius: 11px;
+    outline: none;
+    border: none;
+    box-shadow: none;
+}
+
+tooltip label {
+    color: @onSurface;
+    outline: none;
+    border: none;
+    box-shadow: none;
+    font-weight: normal;
+}
+
+menu {
+    background: @surfaceContainer;
+}
+
+menuitem {
+    color: @onSurface;
+}
+
+menuitem:disabled {
+    color: mix(@onSurface, transparent, 0.38);
+}
+
+menu separator {
+    color: @outline;
+}
+
+separator {
+    color: @outline;
+    margin-right: 0px;
+    margin-left: 0px;
+    margin-top: 8px;
+    margin-bottom: 8px;
+    padding: 0px;
+}

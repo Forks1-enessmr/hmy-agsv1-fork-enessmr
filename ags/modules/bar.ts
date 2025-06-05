@@ -583,7 +583,7 @@ function TaskBar() {
                     child: Widget.Box({
                         children: [materialIcon 
                             ? MaterialIcon(materialIcon, "16px")
-                            : Widget.Icon({ icon: themeIcon || "application-x-executable", size: 16 })
+                            : Widget.Icon({ icon: themeIcon || "application-x-executable", size: 16, class_name: "dropshadowonlfsfix" })
                         ]
                     }),
                     tooltip_markup: client.title,

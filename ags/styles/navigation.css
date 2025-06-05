@@ -1,0 +1,94 @@
+/* -----------------------------------------------------
+ * Navigation bar/rail
+ * ----------------------------------------------------- */
+
+.navigation {
+    background-color: @surfaceContainer;
+    padding-top: 3px;
+    padding-bottom: 3px;
+}
+
+.rail {
+    background-color: @surface;
+    padding-top: 3px;
+    padding-bottom: 3px;
+}
+
+.navigation .label,
+.rail .label {
+    font-weight: normal;
+    font-size: 12px;
+    margin-top: 3px;
+    color: @onSurface;
+}
+
+.rail .label {
+    font-weight: 500;
+}
+
+.navigation_button .container {
+    transition-property: all, border-image, background-size, background-image;
+    transition-duration: 0.3s, 0.3s, 0.3s, 0.3s;
+    transition-timing-function: ease-out;
+    background-image: radial-gradient(circle, transparent 10%, transparent 0%);
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: 1000% 1000%;
+
+    border-radius: 16px;
+    padding-left: 5px;
+    padding-right: 5px;
+    min-height: 25px;
+    min-width: 0px;
+}
+
+.rail .navigation_button .container {
+    padding-left: 12px;
+    padding-right: 12px;
+    min-height: 28px;
+}
+
+.navigation_button .icon {
+    font-weight: 400;
+    color: @onSurface;
+}
+
+.navigation_button.active .icon {
+    color: @onSecondaryContainer;
+}
+
+.navigation_button .container_outer {
+    min-width: 56px;
+}
+
+.rail .navigation_button .container_outer {
+    margin-bottom: 12px;
+}
+
+.navigation_button:hover .container {
+    background-color: mix(@onSurface, @surfaceContainer, 0.92);
+    min-width: 40px;
+}
+
+.rail .navigation_button:hover .container {
+    min-width: 26px;
+}
+
+.navigation_button:active .container {
+    transition-duration: 0.3s, 0.3s, 0ms, 0ms;
+    animation: ripple 0.3s ease-out forwards;
+    background-size: 0% 0%;
+
+    background-image: radial-gradient(circle, mix(@onSurface, @surfaceContainer, 0.87) 10%, transparent 0%);
+    min-width: 40px;
+}
+
+.navigation_button.active .container {
+    background-color: @secondaryContainer;
+    background-image: radial-gradient(circle, @secondaryContainer 10%, transparent 0%);
+    min-width: 40px;
+}
+
+.rail .navigation_button.active .container {
+    min-width: 26px;
+}

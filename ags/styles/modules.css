@@ -1,0 +1,13 @@
+
+/* -----------------------------------------------------
+ * Modules
+ * ----------------------------------------------------- */
+
+.modules_left,
+.modules_center,
+.modules_right {
+    padding-top: 6px;
+    padding-bottom: 6px;
+    margin-left: 12px;
+    margin-right: 12px;
+}

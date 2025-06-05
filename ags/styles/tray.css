@@ -1,0 +1,18 @@
+/* -----------------------------------------------------
+ * Tray
+ * ----------------------------------------------------- */
+
+.tray {
+    background-color: @surfaceContainer;
+    border-radius: 16px;
+    padding: 2px 10px 0px 10px;
+}
+
+.tray button {
+    margin: 0px;
+    padding: 0px;
+}
+
+.tray image {
+    color: @onSurface;
+}

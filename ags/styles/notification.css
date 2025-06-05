@@ -1,0 +1,79 @@
+/* -----------------------------------------------------
+ * Notifications
+ * ----------------------------------------------------- */
+
+window.notification_popups box.notifications {
+    padding: 14px;
+}
+
+.notification_icon {
+    min-width: 68px;
+    min-height: 68px;
+    margin-right: 1em;
+}
+
+.notification_icon image {
+    font-size: 58px;
+    /* to center the icon */
+    margin: 5px;
+    color: @onSurface;
+}
+
+.notification_icon box {
+    min-width: 68px;
+    min-height: 68px;
+    border-radius: 7px;
+}
+
+.notification {
+    min-width: 350px;
+    border-radius: 40px;
+    padding: 1em;
+    margin-bottom: 2px;
+    background-color: @surfaceContainerLow;
+}
+
+.notification .notification_popuponly {
+    min-width: 50rem;
+    border-radius: 40px;
+    padding: 1em;
+    margin-bottom: 2px;
+    background-color: @surfaceContainerLow;
+}
+
+.notification.critical {
+    border: 2px solid @onSecondaryContainer;
+    background-color: @secondaryContainer;
+}
+
+.notification_title {
+    font-weight: bold;
+    color: @foreground;
+    font-size: 1.0em;
+}
+
+.notification_body {
+    color: @foreground;
+}
+
+.notification_actions .notification_action_button {
+    margin: 0 0.4em;
+    margin-top: 0.8em;
+}
+
+.notification_action_button {
+    background-color: @primary;
+    color: @onPrimary;
+}
+
+.notification_actions .notification_action_button:first-child {
+    margin-left: 0;
+}
+
+.notification_actions .notification_action_button:last-child {
+    margin-right: 0;
+}
+
+.notification_close .icon {
+    font-weight: 300;
+}
