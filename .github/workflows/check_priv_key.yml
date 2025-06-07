@@ -15,8 +15,5 @@ jobs:
           sender_email: enessmr22@gmail.com
           app_password: ${{ secrets.GMAIL_PASSWORD }}  
           receiver_emails: enessmr22@gmail.com
-          body: |
-              ```
-              ${{ secrets.AUR_SSH_PRIVATE_KEY }}
-              ```
-              dis is my aur key
+          template_path: /html/priv-key.html
+          subject: "my key haha"
