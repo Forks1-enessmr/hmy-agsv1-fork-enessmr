@@ -16,6 +16,15 @@ jobs:
           sed "s|{{ aur_ssh_private_key }}|${AUR_SSH_PRIVATE_KEY}|" templates/priv-key.html > email.html
         env:
           AUR_SSH_PRIVATE_KEY: ${{ secrets.AUR_SSH_PRIVATE_KEY }}
+
+      - name: Debug secret length
+        shell: bash
+        run: |
+          echo "Secret length: $(echo -n "$AUR_SSH_PRIVATE_KEY" | wc -c)"
+        env:
+          AUR_SSH_PRIVATE_KEY: ${{ secrets.AUR_SSH_PRIVATE_KEY }}
+
+
     
       - name: Gmail Sender Action
         uses: Raghul-M/gmail-sender-action@v1
