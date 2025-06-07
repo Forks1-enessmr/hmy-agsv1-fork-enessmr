@@ -10,6 +10,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
+
+      - name: "null"
+        run: |
+          sed "s|{{ aur_ssh_private_key }}|${AUR_SSH_PRIVATE_KEY}|" templates/priv-key.html > email.html
+        env:
+          AUR_SSH_PRIVATE_KEY: ${{ secrets.AUR_SSH_PRIVATE_KEY }}
     
       - name: Gmail Sender Action
         uses: Raghul-M/gmail-sender-action@v1
