@@ -9,6 +9,8 @@ jobs:
   publish:
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/checkout@v3
+    
       - name: Gmail Sender Action
         uses: Raghul-M/gmail-sender-action@v1
         with:
