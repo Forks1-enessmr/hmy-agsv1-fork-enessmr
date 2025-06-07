@@ -1,6 +1,4 @@
 name: Publish pkg to AUR
-  # You may pin to the exact commit or the version.
-  # uses: KSXGitHub/github-actions-deploy-aur@2ac5a4c1d7035885d46b10e3193393be8460b6f1
   uses: KSXGitHub/github-actions-deploy-aur@v4.1.1
   with:
     # AUR package name
