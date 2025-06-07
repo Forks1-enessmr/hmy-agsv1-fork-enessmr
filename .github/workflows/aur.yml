@@ -16,4 +16,4 @@ jobs:
           pkgbuild: /aur/PKGBUILD
           commit_username: ISwitchedToLFS
           commit_email: enessmr22@gmail.com
-          ssh_private_key: ${{ secrets.AUR_SSH_PRIVATE_KEY }}
+          ssh_private_key: ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAINJPE9SKv7bA5PnfHE+UxWwdEFSuGA6V7Blcux/jQQU7 aur upload ke
