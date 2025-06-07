@@ -13,7 +13,7 @@ jobs:
         uses: KSXGitHub/github-actions-deploy-aur@v4.1.1
         with:
           pkgname: hyprland-m3-fork-git
-          pkgbuild: /aur/PKGBUILD
+          pkgbuild: aur/PKGBUILD
           commit_username: ISwitchedToLFS
           commit_email: enessmr22@gmail.com
           ssh_private_key: | 
