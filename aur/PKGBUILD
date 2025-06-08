@@ -1,5 +1,5 @@
 # Maintainer: enessmr <enessmr22@gmail.com>
-pkgname=hmy-agsv1-fork-git
+pkgname=hyprland-material-you-fork-enessmr-git
 pkgver=1.0
 pkgrel=1
 pkgdesc="That dotfiles"
