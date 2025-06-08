@@ -14,7 +14,7 @@ jobs:
       - name: Publish to AUR
         uses: KSXGitHub/github-actions-deploy-aur@v4.1.1
         with:
-          pkgname: hyprland-material-you-fork-enessmr-git
+          pkgname: hmy-agsv1-fork-enessmr-git
           pkgbuild: aur/PKGBUILD
           commit_username: ISwitchedToLFS
           commit_email: enessmr22@gmail.com
