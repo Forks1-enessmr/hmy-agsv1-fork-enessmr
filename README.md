@@ -27,6 +27,9 @@ I'm creating v2 version for this dotfiles, so for any spoilers go to discord ser
 **⚠️ Known Issues:** 
 - None :)
 
+**⚠️ Distro-Spesific Known Issues:** 
+- On LFS, theres a drop shadow on image icons for some reason
+
 **⚠️ Previous Known Issues:**
 - Ags crashes -> can be fixed by downgrading gjs to 1.82.1 (solved now)
 
