@@ -25,7 +25,7 @@ I'm creating v2 version for this dotfiles, so for any spoilers go to discord ser
 ### Installation
 
 **⚠️ Known Issues:** 
-- JSON.parse fails -> Wait for AIs to give the decode or stringify example to fix
+- None :)
 
 **⚠️ Previous Known Issues:**
 - Ags crashes -> can be fixed by downgrading gjs to 1.82.1 (solved now)
